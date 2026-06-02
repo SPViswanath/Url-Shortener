@@ -1,0 +1,221 @@
+const { validationResult } = require('express-validator');
+const Url = require('../models/Url');
+const Click = require('../models/Click');
+const generateCode = require('../utils/generateCode');
+
+/* ================= CREATE SHORT URL ================= */
+const createUrl = async (req, res) => {
+  try {
+    const { originalUrl, title, expiresAt } = req.body;
+    if (!originalUrl || !originalUrl.trim()) {
+      return res.status(400).json({ message: 'URL is required' });
+    }
+
+    // Basic URL validation
+    try {
+      const urlObj = new URL(originalUrl);
+      if (!['http:', 'https:'].includes(urlObj.protocol)) {
+        return res.status(400).json({ message: 'URL must start with http:// or https://' });
+      }
+    } catch {
+      return res.status(400).json({ message: 'Please provide a valid URL' });
+    }
+
+    // Validate expiry date if provided
+    if (expiresAt && new Date(expiresAt) <= new Date()) {
+      return res.status(400).json({ message: 'Expiry date must be in the future' });
+    }
+
+    // Generate unique short code
+    let shortCode = generateCode();
+    // Ensure uniqueness (very unlikely collision with nanoid, but safe)
+    while (await Url.findOne({ shortCode })) {
+      shortCode = generateCode();
+    }
+
+    const url = await Url.create({
+      userId: req.userId,
+      title: title?.trim() || '',
+      originalUrl: originalUrl.trim(),
+      shortCode,
+      expiresAt: expiresAt || null,
+    });
+
+    // Build the full short URL
+    const shortUrl = `${process.env.BASE_URL}/${shortCode}`;
+
+    res.status(201).json({
+      message: 'Short URL created successfully',
+      data: {
+        id: url._id,
+        originalUrl: url.originalUrl,
+        shortCode: url.shortCode,
+        shortUrl,
+        clickCount: url.clickCount,
+        expiresAt: url.expiresAt,
+        createdAt: url.createdAt,
+      },
+    });
+  } catch (err) {
+    console.error('Create URL error:', err);
+    res.status(500).json({ message: 'Failed to create short URL', error: err.message });
+  }
+};
+
+/* ================= GET ALL USER URLs ================= */
+const getUserUrls = async (req, res) => {
+  try {
+    const urls = await Url.find({ userId: req.userId })
+      .sort({ createdAt: -1 });
+
+    const baseUrl = process.env.BASE_URL;
+
+    const urlsWithShortUrl = urls.map((url) => ({
+      id: url._id,
+      title: url.title,
+      originalUrl: url.originalUrl,
+      shortCode: url.shortCode,
+      shortUrl: `${baseUrl}/${url.shortCode}`,
+      clickCount: url.clickCount,
+      expiresAt: url.expiresAt,
+      isExpired: url.isExpired,
+      isActive: url.isActive,
+      createdAt: url.createdAt,
+      updatedAt: url.updatedAt,
+    }));
+
+    res.status(200).json({
+      message: 'URLs fetched successfully',
+      count: urlsWithShortUrl.length,
+      data: urlsWithShortUrl,
+    });
+  } catch (err) {
+    console.error('Get URLs error:', err);
+    res.status(500).json({ message: 'Failed to fetch URLs', error: err.message });
+  }
+};
+
+/* ================= GET SINGLE URL ================= */
+const getUrlById = async (req, res) => {
+  try {
+    const url = await Url.findOne({
+      _id: req.params.id,
+      userId: req.userId,
+    });
+
+    if (!url) {
+      return res.status(404).json({ message: 'URL not found' });
+    }
+
+    const shortUrl = `${process.env.BASE_URL}/${url.shortCode}`;
+
+    res.status(200).json({
+      data: {
+        id: url._id,
+        originalUrl: url.originalUrl,
+        shortCode: url.shortCode,
+        shortUrl,
+        clickCount: url.clickCount,
+        expiresAt: url.expiresAt,
+        isExpired: url.isExpired,
+        isActive: url.isActive,
+        createdAt: url.createdAt,
+        updatedAt: url.updatedAt,
+      },
+    });
+  } catch (err) {
+    console.error('Get URL error:', err);
+    res.status(500).json({ message: 'Failed to fetch URL', error: err.message });
+  }
+};
+
+/* ================= UPDATE URL (Edit Destination + Expiry) ================= */
+const updateUrl = async (req, res) => {
+  try {
+    const { originalUrl, title, expiresAt } = req.body;
+
+    // Find URL owned by user
+    const url = await Url.findOne({
+      _id: req.params.id,
+      userId: req.userId,
+    });
+
+    if (!url) {
+      return res.status(404).json({ message: 'URL not found' });
+    }
+
+    // Update original URL if provided
+    if (originalUrl) {
+      try {
+        const urlObj = new URL(originalUrl);
+        if (!['http:', 'https:'].includes(urlObj.protocol)) {
+          return res.status(400).json({ message: 'URL must start with http:// or https://' });
+        }
+      } catch {
+        return res.status(400).json({ message: 'Please provide a valid URL' });
+      }
+      url.originalUrl = originalUrl.trim();
+    }
+
+    // Update title if provided (allow empty string)
+    if (title !== undefined) {
+      url.title = title.trim();
+    }
+
+    // Update expiry if provided (send null to remove expiry)
+    if (expiresAt !== undefined) {
+      if (expiresAt && new Date(expiresAt) <= new Date()) {
+        return res.status(400).json({ message: 'Expiry date must be in the future' });
+      }
+      url.expiresAt = expiresAt || null;
+    }
+
+    await url.save();
+
+    const shortUrl = `${process.env.BASE_URL}/${url.shortCode}`;
+
+    res.status(200).json({
+      message: 'URL updated successfully',
+      data: {
+        id: url._id,
+        title: url.title,
+        originalUrl: url.originalUrl,
+        shortCode: url.shortCode,
+        shortUrl,
+        clickCount: url.clickCount,
+        expiresAt: url.expiresAt,
+        isExpired: url.isExpired,
+        isActive: url.isActive,
+        createdAt: url.createdAt,
+        updatedAt: url.updatedAt,
+      },
+    });
+  } catch (err) {
+    console.error('Update URL error:', err);
+    res.status(500).json({ message: 'Failed to update URL', error: err.message });
+  }
+};
+
+/* ================= DELETE URL ================= */
+const deleteUrl = async (req, res) => {
+  try {
+    const url = await Url.findOneAndDelete({
+      _id: req.params.id,
+      userId: req.userId,
+    });
+
+    if (!url) {
+      return res.status(404).json({ message: 'URL not found' });
+    }
+
+    // Also delete all associated click analytics
+    await Click.deleteMany({ urlId: url._id });
+
+    res.status(200).json({ message: 'URL deleted successfully' });
+  } catch (err) {
+    console.error('Delete URL error:', err);
+    res.status(500).json({ message: 'Failed to delete URL', error: err.message });
+  }
+};
+
+module.exports = { createUrl, getUserUrls, getUrlById, updateUrl, deleteUrl };
