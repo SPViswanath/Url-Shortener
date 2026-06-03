@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "https://url-shortener-34gj.onrender.com/api/$1"
+      "destination": "https://shortly-q08q.onrender.com/api/$1"
     },
     {
       "source": "/(login|signup|dashboard|analytics/.*)",
@@ -10,7 +10,7 @@
     },
     {
       "source": "/([a-zA-Z0-9_-]{5,20})",
-      "destination": "https://url-shortener-34gj.onrender.com/$1"
+      "destination": "https://shortly-q08q.onrender.com/$1"
     },
     {
       "source": "/(.*)",
