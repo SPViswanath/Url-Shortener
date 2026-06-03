@@ -1,6 +1,18 @@
 {
   "rewrites": [
     {
+      "source": "/api/(.*)",
+      "destination": "https://url-shortener-34gj.onrender.com/api/$1"
+    },
+    {
+      "source": "/(login|signup|dashboard|analytics/.*)",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/([a-zA-Z0-9_-]{5,20})",
+      "destination": "https://url-shortener-34gj.onrender.com/$1"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }
