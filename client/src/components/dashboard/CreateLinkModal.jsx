@@ -63,7 +63,7 @@ export default function CreateLinkModal({ isOpen, onClose, onSuccess, initialUrl
       if (expiresAt) urlData.expiresAt = new Date(expiresAt).toISOString();
 
       const newUrl = await urlApi.createUrl(urlData);
-      setCreatedUrl(newUrl);
+      setCreatedUrl(newUrl.data);
       setStep(2); // Move to success step
       toast.success("Link created successfully!");
       if (onSuccess) onSuccess();
