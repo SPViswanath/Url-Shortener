@@ -2,9 +2,11 @@ const { validationResult } = require('express-validator');
 const Url = require('../models/Url');
 const Click = require('../models/Click');
 const generateCode = require('../utils/generateCode');
+const csv = require('csv-parser');
+const stream = require('stream');
 
 /* ================= CREATE SHORT URL ================= */
-const createUrl = async (req, res) => {
+const createUrl = async (req, res) => { 
   try {
     const { originalUrl, title, expiresAt } = req.body;
     if (!originalUrl || !originalUrl.trim()) {
@@ -24,6 +26,20 @@ const createUrl = async (req, res) => {
     // Validate expiry date if provided
     if (expiresAt && new Date(expiresAt) <= new Date()) {
       return res.status(400).json({ message: 'Expiry date must be in the future' });
+    }
+
+    // Validate that the user hasn't already shortened this URL
+    const existingUrl = await Url.findOne({ userId: req.userId, originalUrl: originalUrl.trim() });
+    if (existingUrl) {
+      return res.status(400).json({ message: 'You have already shortened this destination URL' });
+    }
+
+    // Validate that the title is unique for this user (if provided)
+    if (title && title.trim()) {
+      const existingTitle = await Url.findOne({ userId: req.userId, title: title.trim() });
+      if (existingTitle) {
+        return res.status(400).json({ message: 'You already have a link with this title' });
+      }
     }
 
     // Generate unique short code
@@ -59,6 +75,85 @@ const createUrl = async (req, res) => {
   } catch (err) {
     console.error('Create URL error:', err);
     res.status(500).json({ message: 'Failed to create short URL', error: err.message });
+  }
+};
+
+/* ================= BULK CREATE URLs ================= */
+const bulkCreateUrls = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: 'No CSV file uploaded' });
+    }
+
+    const results = [];
+    const bufferStream = new stream.PassThrough();
+    bufferStream.end(req.file.buffer);
+
+    bufferStream
+      .pipe(csv())
+      .on('data', (data) => results.push(data))
+      .on('end', async () => {
+        let successCount = 0;
+        let skipCount = 0;
+
+        for (const row of results) {
+          const originalUrl = row.originalUrl || row.url || row.URL;
+          let title = row.title || row.Title || '';
+
+          if (!originalUrl || !originalUrl.trim()) {
+            skipCount++;
+            continue;
+          }
+
+          let formattedUrl = originalUrl.trim();
+          
+          try {
+             if (!/^https?:\/\//i.test(formattedUrl)) {
+                 formattedUrl = 'https://' + formattedUrl;
+             }
+             new URL(formattedUrl);
+          } catch {
+             skipCount++;
+             continue;
+          }
+
+          const existingUrl = await Url.findOne({ userId: req.userId, originalUrl: formattedUrl });
+          if (existingUrl) {
+            skipCount++;
+            continue;
+          }
+
+          let shortCode = generateCode();
+          while (await Url.findOne({ shortCode })) {
+            shortCode = generateCode();
+          }
+
+          await Url.create({
+            userId: req.userId,
+            title: title.trim(),
+            originalUrl: formattedUrl,
+            shortCode,
+            expiresAt: null
+          });
+          
+          successCount++;
+        }
+
+        res.status(201).json({
+          message: 'Bulk import complete',
+          data: {
+            successCount,
+            skipCount,
+            totalProcessed: results.length
+          }
+        });
+      })
+      .on('error', (error) => {
+        return res.status(500).json({ message: 'Failed to parse CSV', error: error.message });
+      });
+  } catch (err) {
+    console.error('Bulk create error:', err);
+    res.status(500).json({ message: 'Failed to process bulk upload', error: err.message });
   }
 };
 
@@ -218,4 +313,4 @@ const deleteUrl = async (req, res) => {
   }
 };
 
-module.exports = { createUrl, getUserUrls, getUrlById, updateUrl, deleteUrl };
+module.exports = { createUrl, bulkCreateUrls, getUserUrls, getUrlById, updateUrl, deleteUrl };

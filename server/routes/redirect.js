@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const UAParser = require('ua-parser-js');
+const geoip = require('geoip-lite');
 const Url = require('../models/Url');
 const Click = require('../models/Click');
 
@@ -51,6 +52,11 @@ router.get('/:shortCode', async (req, res) => {
                req.ip ||
                '';
 
+    // Parse Geolocation
+    const geo = geoip.lookup(ip) || {};
+    const country = geo.country || 'Unknown';
+    const city = geo.city || 'Unknown';
+
     // Create click record (non-blocking — don't await)
     Click.create({
       urlId: url._id,
@@ -59,8 +65,16 @@ router.get('/:shortCode', async (req, res) => {
       userAgent: req.headers['user-agent'] || '',
       browser: browserInfo.name || 'Unknown',
       os: osInfo.name || 'Unknown',
-      device: deviceInfo.type || 'desktop', // defaults to desktop if not mobile/tablet
+      device: deviceInfo.type || 'desktop',
       referrer: req.headers['referer'] || req.headers['referrer'] || 'Direct',
+      country: country,
+      city: city
+    }).then(() => {
+      // Emit socket event to clients viewing this URL's analytics
+      const io = req.app.get('io');
+      if (io) {
+        io.to(url._id.toString()).emit('new_click', { urlId: url._id });
+      }
     }).catch((err) => console.error('Click logging error:', err));
 
     // Increment click count (non-blocking)

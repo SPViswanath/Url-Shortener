@@ -36,13 +36,17 @@ const clickSchema = new mongoose.Schema({
     type: String,
     default: 'Unknown',
   },
-  city: {
-    type: String,
-    default: 'Unknown',
-  },
   referrer: {
     type: String,
     default: 'Direct',
+  },
+  country: {
+    type: String,
+    default: 'Unknown',
+  },
+  city: {
+    type: String,
+    default: 'Unknown',
   },
 });
 

@@ -1,8 +1,11 @@
 const express = require('express');
 const router = express.Router();
+const multer = require('multer');
+const upload = multer({ storage: multer.memoryStorage() });
 const authMiddleware = require('../middleware/auth');
 const {
   createUrl,
+  bulkCreateUrls,
   getUserUrls,
   getUrlById,
   updateUrl,
@@ -15,6 +18,10 @@ router.use(authMiddleware);
 // @route   POST /api/urls
 // @desc    Create a new short URL
 router.post('/', createUrl);
+
+// @route   POST /api/urls/bulk
+// @desc    Bulk create URLs from CSV
+router.post('/bulk', upload.single('file'), bulkCreateUrls);
 
 // @route   GET /api/urls
 // @desc    Get all URLs for logged-in user

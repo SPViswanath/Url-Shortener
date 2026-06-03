@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const authMiddleware = require('../middleware/auth');
-const { signup, login, getMe } = require('../controllers/authController');
+const { signup, login, googleLogin, getMe } = require('../controllers/authController');
 
 // @route   POST /api/auth/signup
 // @desc    Register a new user
@@ -12,6 +12,11 @@ router.post('/signup', signup);
 // @desc    Login user
 // @access  Public
 router.post('/login', login);
+
+// @route   POST /api/auth/google
+// @desc    Google OAuth login
+// @access  Public
+router.post('/google', googleLogin);
 
 // @route   GET /api/auth/me
 // @desc    Get current user

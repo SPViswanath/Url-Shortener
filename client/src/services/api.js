@@ -1,8 +1,10 @@
-import axios from 'axios';
+import axios from "axios";
 
-const api = axios.create({
-  baseURL: 'http://localhost:5000/api',
-  withCredentials: true, // Important for sending/receiving cookies
+const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+
+const API = axios.create({
+  baseURL: API_BASE,
+  withCredentials: true,
 });
 
-export default api;
+export default API;

@@ -108,7 +108,8 @@ d:\Project\URL\
 | `_id`       | ObjectId | Auto-generated            |
 | `name`      | String   | Required                  |
 | `email`     | String   | Required, unique, indexed |
-| `password`  | String   | Hashed with bcrypt        |
+| `password`  | String   | Hashed (Optional for OAuth)|
+| `googleId`  | String   | Google OAuth ID (Optional)|
 | `createdAt` | Date     | Auto (timestamps)         |
 
 ### URLs Collection
@@ -151,7 +152,9 @@ d:\Project\URL\
 | Method | Endpoint            | Auth | Description            |
 |--------|---------------------|------|------------------------|
 | POST   | `/api/auth/signup`  | No   | Register a new user    |
-| POST   | `/api/auth/login`   | No   | Login, returns JWT     |
+| POST   | `/api/auth/login`   | No   | Login, sets HTTP cookie|
+| POST   | `/api/auth/google`  | No   | Google OAuth login     |
+| POST   | `/api/auth/logout`  | No   | Clear auth cookie      |
 | GET    | `/api/auth/me`      | Yes  | Get current user info  |
 
 ### URL Endpoints
@@ -192,6 +195,8 @@ d:\Project\URL\
 | Database ODM         | `mongoose`              | MongoDB object modeling                   |
 | Auth tokens          | `jsonwebtoken`          | JWT generation & verification             |
 | Password hashing     | `bcryptjs`              | Hash passwords (mandatory)                |
+| Google OAuth         | `google-auth-library`   | Verify Google ID tokens                   |
+| Cookie parsing       | `cookie-parser`         | HTTP-only cookies for auth                |
 | Validation           | `express-validator`     | Backend validation (mandatory)            |
 | Environment vars     | `dotenv`                | Config via env vars (mandatory)           |
 | CORS                 | `cors`                  | Cross-origin requests from frontend       |
@@ -210,6 +215,7 @@ d:\Project\URL\
 | UI Framework         | `react` + `react-dom`           | Required by problem statement      |
 | Routing              | `react-router-dom`              | Client-side routing                |
 | HTTP client          | `axios`                         | API calls                          |
+| Google OAuth         | `@react-oauth/google`           | Google Login component             |
 | Charts               | `recharts`                      | Click trend charts (bonus)         |
 | Icons                | `lucide-react`                  | Modern icon set                    |
 | Notifications        | `react-hot-toast`               | Toast notifications                |
@@ -238,13 +244,14 @@ d:\Project\URL\
 - [server/models/Url.js](file:///d:/Project/URL/server/models/Url.js) — URL schema with indexes
 - [server/models/Click.js](file:///d:/Project/URL/server/models/Click.js) — Click/analytics schema
 
-#### Step 1.3 — Authentication System
-- [server/middleware/auth.js](file:///d:/Project/URL/server/middleware/auth.js) — JWT verification middleware
-- [server/controllers/authController.js](file:///d:/Project/URL/server/controllers/authController.js) — signup, login, getMe
+#### Step 1.3 — Authentication System (Cookie-based + Google OAuth)
+- [server/middleware/auth.js](file:///d:/Project/URL/server/middleware/auth.js) — JWT verification middleware via HttpOnly cookies
+- [server/controllers/authController.js](file:///d:/Project/URL/server/controllers/authController.js) — signup, login, googleLogin, logout, getMe
 - [server/routes/auth.js](file:///d:/Project/URL/server/routes/auth.js) — Auth routes
 - [server/utils/validators.js](file:///d:/Project/URL/server/utils/validators.js) — Express-validator chains
-- Password hashing via bcryptjs (mandatory)
-- JWT token generation with configurable expiry
+- Password hashing via bcryptjs (for traditional login)
+- JWT token stored in an HttpOnly, secure cookie
+- Google OAuth integration using `google-auth-library`
 
 ---
 
@@ -303,13 +310,13 @@ d:\Project\URL\
 - `ProtectedRoute` — Wrapper that redirects to login if not authenticated
 
 #### Step 3.3 — Auth Context & Service Layer
-- [client/src/context/AuthContext.jsx](file:///d:/Project/URL/client/src/context/AuthContext.jsx) — Auth state, login/signup/logout actions, JWT token persistence in localStorage
-- [client/src/services/api.js](file:///d:/Project/URL/client/src/services/api.js) — Axios instance with base URL and JWT interceptor
-- [client/src/services/authService.js](file:///d:/Project/URL/client/src/services/authService.js) — login, signup, getMe API calls
+- [client/src/context/AuthContext.jsx](file:///d:/Project/URL/client/src/context/AuthContext.jsx) — Auth state, login/signup/logout actions, Google Login support, cookie-based sessions.
+- [client/src/services/api.js](file:///d:/Project/URL/client/src/services/api.js) — Axios instance configured with `withCredentials: true`
+- [client/src/services/authApi.js](file:///d:/Project/URL/client/src/services/authApi.js) — login, signup, google login API calls
 
 #### Step 3.4 — Auth Pages
-- [client/src/pages/Login.jsx](file:///d:/Project/URL/client/src/pages/Login.jsx) — Login form with validation & error states
-- [client/src/pages/Signup.jsx](file:///d:/Project/URL/client/src/pages/Signup.jsx) — Registration form with validation
+- [client/src/pages/Login.jsx](file:///d:/Project/URL/client/src/pages/Login.jsx) — Login form with Google OAuth button
+- [client/src/pages/Signup.jsx](file:///d:/Project/URL/client/src/pages/Signup.jsx) — Registration form with Google OAuth button
 - Both pages: loading states, success/error toasts, redirect on success
 
 #### Step 3.5 — Landing Page
@@ -445,8 +452,9 @@ d:\Project\URL\
 ## 7. Security Considerations
 
 - Passwords hashed with **bcryptjs** (salt rounds: 12)
-- JWT stored in localStorage, sent via `Authorization: Bearer <token>` header
-- JWT expiry: 7 days
+- JWT stored in HttpOnly cookies to prevent XSS attacks
+- JWT expiry: 1 day
+- **Google OAuth** for secure third-party sign-in
 - **Rate limiting** on auth routes and redirect endpoint
 - Input sanitization on all endpoints
 - URL validation: reject non-HTTP/HTTPS protocols, check for malicious URLs

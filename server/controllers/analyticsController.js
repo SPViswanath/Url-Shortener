@@ -51,6 +51,13 @@ const getAnalytics = async (req, res) => {
       { $sort: { count: -1 } },
     ]);
 
+    // Get location breakdown
+    const locationStats = await Click.aggregate([
+      { $match: { urlId: url._id } },
+      { $group: { _id: '$country', count: { $sum: 1 } } },
+      { $sort: { count: -1 } },
+    ]);
+
     res.status(200).json({
       data: {
         url: {
@@ -70,6 +77,7 @@ const getAnalytics = async (req, res) => {
           browserStats,
           osStats,
           deviceStats,
+          locationStats,
         },
       },
     });
@@ -102,7 +110,7 @@ const getClickHistory = async (req, res) => {
       .sort({ timestamp: -1 })
       .skip(skip)
       .limit(limit)
-      .select('timestamp browser os device referrer ip');
+      .select('timestamp browser os device referrer ip country city');
 
     res.status(200).json({
       data: {
