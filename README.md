@@ -28,7 +28,6 @@ Shortly is packed with enterprise-grade features designed to maximize link utili
 
 ### URL Management
 - **Smart Shortening:** Auto-generated 7-character short codes (using collision-resistant nanoid).
-- **Custom Aliases:** Users can define branded, human-readable links (e.g., `shortly/my-brand`).
 - **Expiry Dates:** Automatically deactivate time-limited marketing campaigns.
 - **Bulk Upload:** Drag-and-drop CSV parser to instantly create hundreds of links at once.
 - **QR Code Generation:** Every link automatically receives a high-quality, downloadable QR code.
@@ -105,44 +104,48 @@ This application was architected by an autonomous AI agent using a highly struct
 ### Architecture Diagram
 ```mermaid
 graph TD
-    %% Frontend Layer
-    subgraph Frontend ["Frontend (React + Vite hosted on Vercel)"]
+    subgraph Frontend ["Frontend (Vercel)"]
         UI["User Interface"]
-        State["Context API"]
-        VercelProxy["Vercel Edge Proxy"]
+        VercelProxy["Edge Proxy"]
     end
 
-    %% Backend Layer
-    subgraph Backend ["Backend (Express hosted on Render)"]
-        API["Express REST API"]
-        Auth["Auth & OAuth Controller"]
-        URLCtrl["URL Management"]
-        AnalyticsCtrl["Analytics Processing"]
-        Redirect["302 Redirect Service"]
+    subgraph Backend ["Backend (Render)"]
+        API["REST API"]
+        Redirect["Redirect Service"]
+        Auth["Auth Controller"]
+        URLCtrl["URL Controller"]
+        AnalyticsCtrl["Analytics Controller"]
     end
 
-    %% Database Layer
     subgraph Database ["MongoDB Atlas"]
-        UsersDB[("Users")]
-        UrlsDB[("URLs")]
-        ClicksDB[("Clicks")]
+        UsersDB[("Users DB")]
+        UrlsDB[("URLs DB")]
+        ClicksDB[("Clicks DB")]
     end
 
-    %% Flow
-    UI <--> |"REST API Calls"| API
-    UI --> |"Short Link Clicks"| VercelProxy
-    VercelProxy --> |"Proxied Request + Headers"| Redirect
+    %% User Interactions
+    UI -.-> |"API Requests"| API
+    UI ===> |"Link Clicks"| VercelProxy
+    VercelProxy ===> |"Proxied Clicks"| Redirect
     
+    %% Internal Logic
     API --> Auth
     API --> URLCtrl
     API --> AnalyticsCtrl
 
-    Auth <--> UsersDB
-    URLCtrl <--> UrlsDB
-    AnalyticsCtrl <--> ClicksDB
-    Redirect <--> UrlsDB
-    Redirect <--> ClicksDB
+    %% Database Connections
+    Auth -.- UsersDB
+    URLCtrl -.- UrlsDB
+    AnalyticsCtrl -.- ClicksDB
+    Redirect -.- UrlsDB
+    Redirect -.- ClicksDB
 ```
+
+---
+
+## 🎥 Demo Video & Live App
+- **Watch the Demo:** [YouTube Video Walkthrough](https://www.youtube.com/watch?v=DFhl9fxNAQ8)
+- **Live Application:** [https://shortly-in.vercel.app](https://shortly-in.vercel.app)
 
 ---
 
