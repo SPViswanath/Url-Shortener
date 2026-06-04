@@ -106,32 +106,32 @@ This application was architected by an autonomous AI agent using a highly struct
 ```mermaid
 graph TD
     %% Frontend Layer
-    subgraph Frontend [Frontend (React + Vite hosted on Vercel)]
-        UI[User Interface]
-        State[Context API]
-        VercelProxy[Vercel Edge Proxy]
+    subgraph Frontend ["Frontend (React + Vite hosted on Vercel)"]
+        UI["User Interface"]
+        State["Context API"]
+        VercelProxy["Vercel Edge Proxy"]
     end
 
     %% Backend Layer
-    subgraph Backend [Backend (Express hosted on Render)]
-        API[Express REST API]
-        Auth[Auth & OAuth Controller]
-        URLCtrl[URL Management]
-        AnalyticsCtrl[Analytics Processing]
-        Redirect[302 Redirect Service]
+    subgraph Backend ["Backend (Express hosted on Render)"]
+        API["Express REST API"]
+        Auth["Auth & OAuth Controller"]
+        URLCtrl["URL Management"]
+        AnalyticsCtrl["Analytics Processing"]
+        Redirect["302 Redirect Service"]
     end
 
     %% Database Layer
-    subgraph Database [MongoDB Atlas]
-        UsersDB[(Users)]
-        UrlsDB[(URLs)]
-        ClicksDB[(Clicks)]
+    subgraph Database ["MongoDB Atlas"]
+        UsersDB[("Users")]
+        UrlsDB[("URLs")]
+        ClicksDB[("Clicks")]
     end
 
     %% Flow
-    UI <--> |REST API Calls| API
-    UI --> |Short Link Clicks| VercelProxy
-    VercelProxy --> |Proxied Request + Headers| Redirect
+    UI <--> |"REST API Calls"| API
+    UI --> |"Short Link Clicks"| VercelProxy
+    VercelProxy --> |"Proxied Request + Headers"| Redirect
     
     API --> Auth
     API --> URLCtrl
