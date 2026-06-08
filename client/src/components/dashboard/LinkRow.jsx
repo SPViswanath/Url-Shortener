@@ -1,3 +1,9 @@
+/**
+ * LinkRow.jsx
+ * 
+ * A single row component in the dashboard link list.
+ * Displays URL details and provides action buttons (copy, edit, delete, stats).
+ */
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Copy, BarChart2, Edit3, Trash2, ExternalLink, Calendar, Check, Share2 } from "lucide-react";

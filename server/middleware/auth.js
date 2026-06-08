@@ -1,3 +1,9 @@
+/**
+ * auth.js
+ * 
+ * Authentication middleware for Express.
+ * Verifies JWT tokens from cookies or Authorization headers to protect routes.
+ */
 const jwt = require('jsonwebtoken');
 
 /**

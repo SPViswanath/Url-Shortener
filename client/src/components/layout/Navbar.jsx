@@ -1,3 +1,9 @@
+/**
+ * Navbar.jsx
+ * 
+ * Top navigation bar component.
+ * Displays logo, public links (Login/Signup), and authenticated user profile dropdown.
+ */
 import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";

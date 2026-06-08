@@ -1,3 +1,9 @@
+/**
+ * routes/redirect.js
+ * 
+ * Express route for handling URL redirection.
+ * Receives the short code and redirects to the original destination.
+ */
 const express = require('express');
 const router = express.Router();
 const UAParser = require('ua-parser-js');

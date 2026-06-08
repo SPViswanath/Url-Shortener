@@ -1,3 +1,10 @@
+/**
+ * main.jsx
+ * 
+ * Application entry point.
+ * Bootstraps the React application, rendering it into the DOM.
+ * Wraps the app with global providers: StrictMode, GoogleOAuthProvider, and AuthProvider.
+ */
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import './index.css';

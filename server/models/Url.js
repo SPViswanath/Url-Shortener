@@ -1,5 +1,14 @@
+/**
+ * Url.js
+ * 
+ * Mongoose model for storing shortened URLs.
+ * Tracks the original URL, short code, custom alias, click count, and expiration date.
+ */
 const mongoose = require('mongoose');
 
+/**
+ * Schema definition for a URL document.
+ */
 const urlSchema = new mongoose.Schema(
   {
     userId: {

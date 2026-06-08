@@ -1,3 +1,11 @@
+/**
+ * server.js
+ * 
+ * Main application entry point for the URL Shortener backend.
+ * This file configures the Express server, connects to MongoDB,
+ * sets up middleware (CORS, JSON parsing), initializes Socket.IO for real-time analytics,
+ * and defines all the API routes.
+ */
 const express = require('express');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');

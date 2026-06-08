@@ -1,3 +1,10 @@
+/**
+ * Dashboard.jsx
+ * 
+ * Main authenticated user dashboard.
+ * Displays overall statistics, a searchable/filterable list of user's shortened URLs,
+ * and provides options to create, edit, share, or delete links.
+ */
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";

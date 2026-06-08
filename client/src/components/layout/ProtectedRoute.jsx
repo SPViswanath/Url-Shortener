@@ -1,3 +1,9 @@
+/**
+ * ProtectedRoute.jsx
+ * 
+ * Higher-order component to protect private routes.
+ * Redirects to the login page if the user is not authenticated.
+ */
 import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 

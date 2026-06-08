@@ -1,7 +1,19 @@
+/**
+ * analyticsController.js
+ * 
+ * Handles retrieving analytics data for shortened URLs.
+ * Provides general stats, click history, and daily trends.
+ */
 const Click = require('../models/Click');
 const Url = require('../models/Url');
 
-/* ================= GET ANALYTICS FOR A URL ================= */
+/**
+ * Retrieves general analytics for a specific URL.
+ * Includes total clicks, device stats, OS stats, and location data.
+ * 
+ * @param {Object} req - Express request object containing urlId.
+ * @param {Object} res - Express response object.
+ */
 const getAnalytics = async (req, res) => {
   try {
     const { urlId } = req.params;
@@ -87,7 +99,12 @@ const getAnalytics = async (req, res) => {
   }
 };
 
-/* ================= GET CLICK HISTORY (Paginated) ================= */
+/**
+ * Retrieves paginated click history for a specific URL.
+ * 
+ * @param {Object} req - Express request object containing urlId and pagination queries.
+ * @param {Object} res - Express response object.
+ */
 const getClickHistory = async (req, res) => {
   try {
     const { urlId } = req.params;
@@ -129,7 +146,13 @@ const getClickHistory = async (req, res) => {
   }
 };
 
-/* ================= GET DAILY CLICK TRENDS ================= */
+/**
+ * Retrieves daily click trends for a specific URL over a given period.
+ * Useful for rendering time-series charts.
+ * 
+ * @param {Object} req - Express request object containing urlId and days query.
+ * @param {Object} res - Express response object.
+ */
 const getDailyClicks = async (req, res) => {
   try {
     const { urlId } = req.params;

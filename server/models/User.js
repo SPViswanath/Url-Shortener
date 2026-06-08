@@ -1,5 +1,14 @@
+/**
+ * User.js
+ * 
+ * Mongoose model for user accounts.
+ * Stores user details and authentication credentials (password or Google ID).
+ */
 const mongoose = require('mongoose');
 
+/**
+ * Schema definition for a User document.
+ */
 const userSchema = new mongoose.Schema(
   {
     name: {

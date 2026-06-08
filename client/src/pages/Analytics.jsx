@@ -1,3 +1,10 @@
+/**
+ * Analytics.jsx
+ * 
+ * Detailed analytics page for a specific shortened URL.
+ * Displays total clicks, daily click trends, device/browser/location stats,
+ * and a recent click history table. Integrates with Socket.io for real-time updates.
+ */
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { 

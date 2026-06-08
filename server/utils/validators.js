@@ -1,3 +1,9 @@
+/**
+ * validators.js
+ * 
+ * Express-validator middleware chains for route input validation.
+ * Ensures data integrity and security before reaching the controllers.
+ */
 const { body } = require('express-validator');
 
 /**

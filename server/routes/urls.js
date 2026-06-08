@@ -1,3 +1,9 @@
+/**
+ * routes/urls.js
+ * 
+ * Express routes for managing shortened URLs.
+ * Maps endpoints to their respective controller functions.
+ */
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');

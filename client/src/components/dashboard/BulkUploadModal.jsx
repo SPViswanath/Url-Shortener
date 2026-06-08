@@ -1,3 +1,9 @@
+/**
+ * BulkUploadModal.jsx
+ * 
+ * Component for uploading a CSV file to bulk create shortened URLs.
+ * Handles drag-and-drop file selection and API submission.
+ */
 import { useState, useEffect } from "react";
 import { X, UploadCloud, FileText, CheckCircle2, AlertCircle } from "lucide-react";
 import toast from "react-hot-toast";

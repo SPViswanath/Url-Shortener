@@ -1,3 +1,9 @@
+/**
+ * routes/analytics.js
+ * 
+ * Express routes for URL analytics and click statistics.
+ * Maps endpoints to their respective controller functions.
+ */
 const express = require('express');
 const router = express.Router();
 const authMiddleware = require('../middleware/auth');

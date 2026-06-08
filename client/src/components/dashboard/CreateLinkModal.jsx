@@ -1,3 +1,9 @@
+/**
+ * CreateLinkModal.jsx
+ * 
+ * Modal component for creating a new shortened URL.
+ * Also handles QR code generation and sharing for the new link.
+ */
 import { useState, useEffect } from "react";
 import { X, Link2, Calendar, Wand2, Download, Copy, Check, Share2, QrCode } from "lucide-react";
 import QRCode from "qrcode";

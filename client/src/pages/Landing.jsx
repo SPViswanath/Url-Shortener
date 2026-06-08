@@ -1,3 +1,9 @@
+/**
+ * Landing.jsx
+ * 
+ * Public landing page for the application.
+ * Highlights features and provides a quick input to shorten a URL directly.
+ */
 import { Link } from "react-router-dom";
 import { 
   Link as LinkIcon, 

@@ -1,3 +1,9 @@
+/**
+ * urlApi.js
+ * 
+ * API service functions for managing URLs and retrieving analytics.
+ * Wraps Axios calls for URL CRUD operations and statistics endpoints.
+ */
 import API from "./api";
 
 // Fetch all URLs for the logged in user

@@ -1,3 +1,9 @@
+/**
+ * Login.jsx
+ * 
+ * User login page.
+ * Supports email/password authentication and Google OAuth login.
+ */
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";

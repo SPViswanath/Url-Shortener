@@ -1,3 +1,9 @@
+/**
+ * App.jsx
+ * 
+ * Main component that sets up React Router.
+ * Defines public and protected routes for the application.
+ */
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 

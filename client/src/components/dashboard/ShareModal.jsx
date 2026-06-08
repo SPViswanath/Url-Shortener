@@ -1,3 +1,8 @@
+/**
+ * ShareModal.jsx
+ * 
+ * Modal component to easily share a shortened URL to social media, via QR code, or copy to clipboard.
+ */
 import { useState, useEffect } from "react";
 import { X, Copy, Check, Download, QrCode, MoreHorizontal } from "lucide-react";
 import toast from "react-hot-toast";

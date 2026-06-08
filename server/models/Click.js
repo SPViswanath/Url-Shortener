@@ -1,5 +1,14 @@
+/**
+ * Click.js
+ * 
+ * Mongoose model for tracking URL clicks.
+ * Stores analytics data such as timestamp, IP, user agent, location, and referrer.
+ */
 const mongoose = require('mongoose');
 
+/**
+ * Schema definition for a Click event.
+ */
 const clickSchema = new mongoose.Schema({
   urlId: {
     type: mongoose.Schema.Types.ObjectId,
@@ -29,10 +38,6 @@ const clickSchema = new mongoose.Schema({
     default: 'Unknown',
   },
   device: {
-    type: String,
-    default: 'Unknown',
-  },
-  country: {
     type: String,
     default: 'Unknown',
   },

@@ -1,3 +1,9 @@
+/**
+ * AuthContext.jsx
+ * 
+ * Provides global authentication state and methods across the React application.
+ * Manages user login, signup, logout, and token verification using React Context API.
+ */
 import { createContext, useContext, useState, useEffect } from "react";
 import * as authApi from "../services/authApi";
 import axios from "axios";

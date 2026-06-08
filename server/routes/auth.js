@@ -1,3 +1,9 @@
+/**
+ * routes/auth.js
+ * 
+ * Express routes for authentication.
+ * Maps endpoints to their respective controller functions.
+ */
 const express = require('express');
 const router = express.Router();
 const authMiddleware = require('../middleware/auth');

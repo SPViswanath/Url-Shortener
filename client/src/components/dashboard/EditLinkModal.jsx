@@ -1,3 +1,8 @@
+/**
+ * EditLinkModal.jsx
+ * 
+ * Modal component to edit an existing URL's destination or expiration date.
+ */
 import { useState, useEffect } from "react";
 import { X, Link2, Type, Calendar } from "lucide-react";
 import * as urlApi from "../../services/urlApi";

@@ -1,3 +1,9 @@
+/**
+ * Footer.jsx
+ * 
+ * Application footer component.
+ * Displays copyright and tagline at the bottom of the pages.
+ */
 import { Link } from "react-router-dom";
 
 export default function Footer() {
@@ -7,7 +13,7 @@ export default function Footer() {
       <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[var(--color-primary)]/50 to-transparent"></div>
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center">
-        
+        5
         {/* Left Side: Logo & Tagline */}
         <div className="text-center md:text-left group cursor-default">
           <Link to="/" className="inline-block font-['Pacifico'] text-3xl text-[var(--color-primary)] hover:-translate-y-0.5 hover:drop-shadow-lg transition-transform duration-300 mb-1">

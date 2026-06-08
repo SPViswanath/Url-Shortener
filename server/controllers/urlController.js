@@ -1,3 +1,9 @@
+/**
+ * urlController.js
+ * 
+ * Manages URL shortening operations.
+ * Includes creating short URLs, bulk imports, retrieving user URLs, and deletion.
+ */
 const { validationResult } = require('express-validator');
 const Url = require('../models/Url');
 const Click = require('../models/Click');
@@ -5,7 +11,13 @@ const generateCode = require('../utils/generateCode');
 const csv = require('csv-parser');
 const stream = require('stream');
 
-/* ================= CREATE SHORT URL ================= */
+/**
+ * Creates a new shortened URL.
+ * Generates a unique short code and links it to the authenticated user.
+ * 
+ * @param {Object} req - Express request object containing originalUrl, title, expiresAt.
+ * @param {Object} res - Express response object.
+ */
 const createUrl = async (req, res) => { 
   try {
     const { originalUrl, title, expiresAt } = req.body;
@@ -78,7 +90,13 @@ const createUrl = async (req, res) => {
   }
 };
 
-/* ================= BULK CREATE URLs ================= */
+/**
+ * Processes a CSV file upload to bulk create shortened URLs.
+ * Skips invalid or duplicate URLs and creates short codes for valid ones.
+ * 
+ * @param {Object} req - Express request object containing the CSV file.
+ * @param {Object} res - Express response object.
+ */
 const bulkCreateUrls = async (req, res) => {
   try {
     if (!req.file) {
@@ -157,7 +175,12 @@ const bulkCreateUrls = async (req, res) => {
   }
 };
 
-/* ================= GET ALL USER URLs ================= */
+/**
+ * Retrieves all shortened URLs belonging to the authenticated user.
+ * 
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ */
 const getUserUrls = async (req, res) => {
   try {
     const urls = await Url.find({ userId: req.userId })
@@ -190,7 +213,12 @@ const getUserUrls = async (req, res) => {
   }
 };
 
-/* ================= GET SINGLE URL ================= */
+/**
+ * Retrieves a specific URL by its ID, ensuring the user owns it.
+ * 
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ */
 const getUrlById = async (req, res) => {
   try {
     const url = await Url.findOne({
@@ -224,7 +252,12 @@ const getUrlById = async (req, res) => {
   }
 };
 
-/* ================= UPDATE URL (Edit Destination + Expiry) ================= */
+/**
+ * Updates a URL's destination, title, or expiry date.
+ * 
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ */
 const updateUrl = async (req, res) => {
   try {
     const { originalUrl, title, expiresAt } = req.body;
@@ -291,7 +324,12 @@ const updateUrl = async (req, res) => {
   }
 };
 
-/* ================= DELETE URL ================= */
+/**
+ * Deletes a URL and all its associated click analytics.
+ * 
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ */
 const deleteUrl = async (req, res) => {
   try {
     const url = await Url.findOneAndDelete({
